@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Delete,
   /*ParseIntPipe,
   NotFoundException,*/
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateClientUseCase } from 'src/modules/client/application/use-cases/create-client.use-case';
 import { FindAllClientsUseCase } from 'src/modules/client/application/use-cases/find-all-clients.use-case';
 import { UpdateClientUseCase } from 'src/modules/client/application/use-cases/update-client.use-case';
+import { DeleteClientUseCase } from 'src/modules/client/application/use-cases/delete-client.use-case';
 import {
   CreateClientDto,
   UpdateClientDto,
@@ -26,6 +28,7 @@ export class ClientController {
     private readonly createClientUseCase: CreateClientUseCase,
     private readonly findAllClientsUseCase: FindAllClientsUseCase,
     private readonly updateClientUseCase: UpdateClientUseCase,
+    private readonly deleteClientUseCase: DeleteClientUseCase,
   ) {}
 
   @Post('create')
@@ -107,6 +110,32 @@ export class ClientController {
       email: updatedClient.email,
       createdAt: updatedClient.createdAt,
       updatedAt: updatedClient.updatedAt,
+    };
+  }
+
+  @Delete(':code')
+  @ApiOperation({ summary: 'Delete a client by code' })
+  @ApiParam({
+    name: 'code',
+    description: 'Client code',
+    example: 'CLI001',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Client deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Client not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid client code',
+  })
+  async deleteClient(@Param('code') code: string): Promise<{ message: string }> {
+    await this.deleteClientUseCase.execute(code);
+    return {
+      message: `Client with code ${code} deleted successfully`,
     };
   }
 

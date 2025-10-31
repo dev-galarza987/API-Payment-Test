@@ -61,6 +61,18 @@ export class ClientTypeormRepository implements ClientRepository {
   }
 
   async delete(code: string): Promise<void> {
-    await this.repository.delete({ code });
+    // Verificar que el cliente existe antes de eliminarlo
+    const client = await this.repository.findOneBy({ code });
+    if (!client) {
+      throw new Error(`Client with code ${code} not found`);
+    }
+
+    // Proceder con la eliminación
+    const result = await this.repository.delete({ code });
+    
+    // Verificar que la eliminación fue exitosa
+    if (result.affected === 0) {
+      throw new Error(`Failed to delete client with code ${code}`);
+    }
   }
 }
