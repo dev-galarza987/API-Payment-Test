@@ -2,25 +2,67 @@ import {
   Controller,
   Post,
   Body,
-  /*Get,
-  Param,
+  Get,
+  /*Param,
   ParseIntPipe,
   NotFoundException,*/
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateClientUseCase } from 'src/modules/client/application/use-cases/create-client.use-case';
-import { CreateClientDto } from 'src/modules/client/domain/dtos/client.dto';
-// Importa otros casos de uso si los tuvieras: FindClientUseCase, etc.
+import { FindAllClientsUseCase } from 'src/modules/client/application/use-cases/find-all-clients.use-case';
+import {
+  CreateClientDto,
+  FindAllClientsResponseDto,
+  ClientResponseDto,
+} from 'src/modules/client/domain/dtos/client.dto';
 
+@ApiTags('clients')
 @Controller('client/')
 export class ClientController {
   constructor(
     private readonly createClientUseCase: CreateClientUseCase,
-    // Aquí se inyectarían otros casos de uso...
+    private readonly findAllClientsUseCase: FindAllClientsUseCase,
   ) {}
 
   @Post('create')
+  @ApiOperation({ summary: 'Create a new client' })
+  @ApiResponse({
+    status: 201,
+    description: 'Client created successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data',
+  })
   async createClient(@Body() createClientDto: CreateClientDto) {
     return await this.createClientUseCase.execute(createClientDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all clients' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all clients retrieved successfully',
+    type: FindAllClientsResponseDto,
+  })
+  async getAllClients(): Promise<FindAllClientsResponseDto> {
+    const clients = await this.findAllClientsUseCase.execute();
+
+    // Transform entities to response DTOs
+    const clientsResponse: ClientResponseDto[] = clients.map((client) => ({
+      id: client.id,
+      code: client.code,
+      name: client.name,
+      lastname: client.lastname,
+      email: client.email,
+      createdAt: client.createdAt,
+      updatedAt: client.updatedAt,
+    }));
+
+    return {
+      clients: clientsResponse,
+      total: clients.length,
+    };
   }
 
   // Ejemplo de otro endpoint para consultar, usando otro caso de uso

@@ -134,3 +134,70 @@ export class UpdateClientDto {
   @MinLength(6)
   password?: string;
 }
+
+export class ClientResponseDto {
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Client unique identifier',
+    example: 1,
+  })
+  id: number;
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Unique client code',
+    example: 'CLI001',
+  })
+  code: string;
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Client first name',
+    example: 'John',
+  })
+  name: string;
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Client last name',
+    example: 'Doe',
+  })
+  lastname: string;
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Client email address',
+    example: 'john.doe@example.com',
+  })
+  email: string;
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Client creation date',
+    example: '2025-10-31T10:30:00Z',
+  })
+  createdAt: Date;
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Client last update date',
+    example: '2025-10-31T10:30:00Z',
+  })
+  updatedAt: Date;
+}
+
+export class FindAllClientsResponseDto {
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'List of all clients',
+    type: [ClientResponseDto],
+  })
+  clients: ClientResponseDto[];
+
+  // Swagger Documentation
+  @ApiProperty({
+    description: 'Total number of clients',
+    example: 25,
+  })
+  total: number;
+}
