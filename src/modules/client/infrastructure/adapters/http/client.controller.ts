@@ -3,15 +3,18 @@ import {
   Post,
   Body,
   Get,
-  /*Param,
-  ParseIntPipe,
+  Param,
+  Patch,
+  /*ParseIntPipe,
   NotFoundException,*/
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateClientUseCase } from 'src/modules/client/application/use-cases/create-client.use-case';
 import { FindAllClientsUseCase } from 'src/modules/client/application/use-cases/find-all-clients.use-case';
+import { UpdateClientUseCase } from 'src/modules/client/application/use-cases/update-client.use-case';
 import {
   CreateClientDto,
+  UpdateClientDto,
   FindAllClientsResponseDto,
   ClientResponseDto,
 } from 'src/modules/client/domain/dtos/client.dto';
@@ -22,6 +25,7 @@ export class ClientController {
   constructor(
     private readonly createClientUseCase: CreateClientUseCase,
     private readonly findAllClientsUseCase: FindAllClientsUseCase,
+    private readonly updateClientUseCase: UpdateClientUseCase,
   ) {}
 
   @Post('create')
@@ -62,6 +66,47 @@ export class ClientController {
     return {
       clients: clientsResponse,
       total: clients.length,
+    };
+  }
+
+  @Patch(':code/update')
+  @ApiOperation({ summary: 'Update a client by code' })
+  @ApiParam({
+    name: 'code',
+    description: 'Client code',
+    example: 'CLI001',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Client updated successfully',
+    type: ClientResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Client not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input data',
+  })
+  async updateClient(
+    @Param('code') code: string,
+    @Body() updateClientDto: UpdateClientDto,
+  ): Promise<ClientResponseDto> {
+    const updatedClient = await this.updateClientUseCase.execute(
+      code,
+      updateClientDto,
+    );
+
+    // Transform entity to response DTO
+    return {
+      id: updatedClient.id,
+      code: updatedClient.code,
+      name: updatedClient.name,
+      lastname: updatedClient.lastname,
+      email: updatedClient.email,
+      createdAt: updatedClient.createdAt,
+      updatedAt: updatedClient.updatedAt,
     };
   }
 

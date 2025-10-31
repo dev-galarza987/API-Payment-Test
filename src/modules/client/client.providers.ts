@@ -8,6 +8,7 @@ import { CLIENT_REPOSITORY } from './client.constants';
 import { ClientTypeormRepository } from './infrastructure/adapters/persistence/typeorm/repositories/client-typeorm.repository';
 import { CreateClientUseCase } from './application/use-cases/create-client.use-case';
 import { FindAllClientsUseCase } from './application/use-cases/find-all-clients.use-case';
+import { UpdateClientUseCase } from './application/use-cases/update-client.use-case';
 
 export const ClientProviders: Provider[] = [
   {
@@ -19,5 +20,6 @@ export const ClientProviders: Provider[] = [
   },
   CreateClientUseCase,
   FindAllClientsUseCase,
+  UpdateClientUseCase,
   // ... otros casos de uso
 ];
