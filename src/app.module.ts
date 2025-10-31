@@ -10,7 +10,7 @@ import { ClientModule } from './modules/client/client.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: '26.214.76.15',
       port: 5432,
       username: 'galarza',
       password: '12413087',
